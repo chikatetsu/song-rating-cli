@@ -52,21 +52,21 @@ def get_now_playing() -> Song | None:
 
 
 def rate_songs(better_song, worse_song):
-    try:
-        payload = {
-            "better_song": better_song,
-            "worse_song": worse_song
-        }
-        resp = http_post(f"{API_URL}/rate", json=payload, headers=API_HEADERS)
-        resp.raise_for_status()
-        content = resp.json().get("response")
-        return content
-    except HTTPError as err:
-        print(err.response.text)
-        return None
-    except Exception as e:
-        print("Erreur lors de la requête :", e)
-        return None
+    payload = {
+        "better_song": better_song,
+        "worse_song": worse_song
+    }
+    for i in range(3):
+        try:
+            resp = http_post(f"{API_URL}/rate", json=payload, headers=API_HEADERS)
+            resp.raise_for_status()
+            content = resp.json().get("response")
+            print(content)
+            return
+        except HTTPError as err:
+            print(f"Attempt {i}: {err.response.text}")
+        except Exception as e:
+            print(f"Attempt {i}: {e}")
 
 
 def get_rates():
@@ -106,10 +106,9 @@ if __name__ == "__main__":
                 event = read_event()
                 if event.event_type == KEY_DOWN:
                     if event.name == "page up":
-                        response = rate_songs(current_song, last_song)
+                        rate_songs(current_song, last_song)
                     elif event.name == "page down":
-                        response = rate_songs(last_song, current_song)
+                        rate_songs(last_song, current_song)
                     else:
                         continue
-                    print(response)
                     is_rated = True
