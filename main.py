@@ -1,3 +1,5 @@
+from typing import Optional
+
 from requests import get as http_get, post as http_post, HTTPError
 from time import sleep
 from keyboard import KEY_DOWN, read_event
@@ -25,7 +27,7 @@ CIDER_HEADERS = {
 }
 
 
-def get_now_playing() -> Song | None:
+def get_now_playing() -> Optional[Song]:
     try:
         resp = http_get(CIDER_URL, headers=CIDER_HEADERS)
         resp.raise_for_status()
