@@ -13,6 +13,4 @@ ENV/
 env.bak/
 venv.bak/
 .idea/
-
-# Leaderboard files
-*.json
+node_modules/
