@@ -60,7 +60,7 @@ class ApiClient:
 
     def get_next_song(self, current_song: str) -> str | None:
         try:
-            resp = http_get(parse.quote(f"{self.API_URL}/next_song/{current_song}"), headers=self.API_HEADERS)
+            resp = http_get(f"{self.API_URL}/next_song/{parse.quote(current_song)}", headers=self.API_HEADERS)
             resp.raise_for_status()
             if resp.text == "":
                 return None
