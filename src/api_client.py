@@ -1,5 +1,8 @@
+from urllib import parse
 from os import getenv
 from requests import get as http_get, post as http_post, HTTPError
+
+from src.song_status_dto import SongStatusDto
 
 
 class ApiClient:
@@ -11,7 +14,7 @@ class ApiClient:
             "Authorization": f"Bearer {self.AUTH_TOKEN}",
         }
 
-    def rate_songs(self, better_song, worse_song):
+    def rate_songs(self, better_song, worse_song) -> None:
         payload = {
             "better_song": better_song,
             "worse_song": worse_song
@@ -41,12 +44,13 @@ class ApiClient:
             print(f"Erreur lors de la requête : {e}")
             return None
 
-    def get_status_between_songs(self):
+    def get_status_between_songs(self) -> SongStatusDto | None:
         try:
             resp = http_get(f"{self.API_URL}/status", headers=self.API_HEADERS)
             resp.raise_for_status()
             data = resp.json()
-            return data
+            song_status = SongStatusDto(message=data.get("message"), is_compared=data.get("is_compared"))
+            return song_status
         except HTTPError as err:
             print(err.response.text)
             return None
@@ -54,9 +58,9 @@ class ApiClient:
             print(f"Erreur lors de la requête : {e}")
             return None
 
-    def get_next_song(self):
+    def get_next_song(self, current_song: str) -> str | None:
         try:
-            resp = http_get(f"{self.API_URL}/next_song", headers=self.API_HEADERS)
+            resp = http_get(parse.quote(f"{self.API_URL}/next_song/{current_song}"), headers=self.API_HEADERS)
             resp.raise_for_status()
             if resp.text == "":
                 return None
