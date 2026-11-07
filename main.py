@@ -25,16 +25,15 @@ if __name__ == "__main__":
         last_song = current_song
         current_song = current.format_song()
         print(current_song)
+        next_song = api_client.get_next_song(current_song)
+        if next_song:
+            next_song_id = cider_client.search_song_id(next_song)
+            if next_song_id is not None:
+                is_success = cider_client.queue_next(next_song_id)
+                if is_success:
+                    print(f"{next_song} added to the queue")
 
         if last_song != "":
-            next_song = api_client.get_next_song(current_song)
-            if next_song:
-                next_song_id = cider_client.search_song_id(next_song)
-                if next_song_id is not None:
-                    is_success = cider_client.queue_next(next_song_id)
-                    if is_success:
-                        print(f"{next_song} added to the queue")
-
             is_rated = False
             while not is_rated:
                 event = read_event()
