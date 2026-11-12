@@ -66,7 +66,8 @@ class ApiClient:
                 return None
             return resp.text
         except HTTPError as err:
-            print(err.response.text)
+            if err.response is not None and err.response.status_code != 404:
+                print(err.response.text)
             return None
         except Exception as e:
             print("Erreur lors de la requête :", e)
