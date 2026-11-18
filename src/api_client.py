@@ -58,13 +58,16 @@ class ApiClient:
             print(f"Erreur lors de la requête : {e}")
             return None
 
-    def get_next_song(self, current_song: str) -> str | None:
+    def get_next_song(self, current_song: str, last_song: str | None = None) -> str | None:
         try:
-            resp = http_get(f"{self.API_URL}/next_song/{parse.quote(current_song)}", headers=self.API_HEADERS)
+            if last_song is None:
+                resp = http_get(f"{self.API_URL}/next_song/{parse.quote(current_song)}", headers=self.API_HEADERS)
+            else:
+                resp = http_get(f"{self.API_URL}/next_song/{parse.quote(current_song)}/last_song/{parse.quote(last_song)}", headers=self.API_HEADERS)
             resp.raise_for_status()
-            if resp.text == "":
+            if resp.status_code == 204:
                 return None
-            return resp.text
+            return resp.text[1:-1]
         except HTTPError as err:
             if err.response is not None and err.response.status_code != 404:
                 print(err.response.text)
